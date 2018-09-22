@@ -1,0 +1,35 @@
+def input_tokens
+	create,c->create
+	delete,d->delete
+	reset,r,clear->reset
+	virtual,v->virtual
+	list,l,la->list
+;;
+def stream
+	prov,provisioning,customer-structure->/dev/data/fr/axis/streams/ref:customer-structure
+	reporting-structure,getids->/dev/apps/fr/globalreporting/streams/ref:reporting-structure
+	ips,payment->/dev/data/de/ips/streams/transaction:payment
+	dl2es,index->/dev/apps/fr/globalreporting/streams/search:index
+	elastic->/dev/apps/fr/globalreporting/streams/elastic:test
+	csv2dl,settlement->/dev/data/de/ips/streams/batch:settlement
+;;
+def functions
+	create->create_func
+	delete->delete_func
+	reset->reset_func
+	list->list_func
+;;
+actions
+{
+	create $1:stream -> create $1
+	create $1:stream virtual $2:string -> create $1.$2
+	reset $1:stream -> reset $1
+	reset $1:stream virtual $2:string -> reset $1.$2
+	delete $1:stream -> delete $1
+	delete $1:stream virtual $2:string -> delete $1.$2
+	create all -> createall
+	create all virtual $1 -> createall $1
+	list $1:stream -> list $1
+	list all -> listall
+	list $args-n:stream -> list $args
+}
