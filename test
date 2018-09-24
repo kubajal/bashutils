@@ -1,0 +1,37 @@
+test_start()
+{
+        spaces="                                               "
+        args="${@:2}"
+        printf "=================================================\n"
+        printf "|                    Test                       |\n"
+        printf "=================================================\n"
+        printf "|%-47s|\n" "$1"
+        printf "|CLI args %-38s|\n" "$args"
+        printf "\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\\n"
+}
+
+test_end()
+{
+        printf "/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\ \n"
+        printf "|                                               |\n"
+        printf "=================================================\n"
+        printf "|%-47s|\n" "$1 has ended"
+        printf "=================================================\n"
+}
+
+test() {
+
+        test_start "$1" "${@:2}"
+        test_smthing
+        test_end "$1"
+        printf "\n"
+        printf "\n"
+}
+
+test_suite()
+{
+        test "asdf" -g 12134 --env dev -p 123
+        test "ghj" -g 12134 --env dev -p 123,234
+        test "oiuyt" --env dev -g 12345 -o 12345
+        test "trewsasda" --env dev -g 12134 -o 8900227371660170113
+}
