@@ -1,104 +1,41 @@
-parse_def()
+
+create()
 {
-	# declare global associative
-	declare -Ag $1
-	while read q;
-		do
-			if [ `echo $q | grep \;\;` ]; then
-				break
-			fi
-			keys=${q%" -> "*}
-			value=${q#*" -> "}
-			ks=`echo $keys | sed 's/,/\n/g'`
-			for key in $ks;
-			do
-				cmd=$1
-				cmd="$1[\"$key\"]=$value"
-				eval $cmd
-			done
-		done
+    echo "create $1 <- from function"
 }
 
-parse_defs()
-{
-	while read p; do
-		#echo "p $p"
-		if [ "`echo $p | grep def`" = "" ]; then
-			return 1
-		fi
-		name=${p#*"def "}
-		parse_def $name
-	done
+match(){
+    echo "/$1/ {print $2}" > awk.txt
+    cmd=$(awk -f awk.txt input.txt)
+    echo "cmd: >$cmd<"
+    eval $cmd
 }
 
-rules=()
+declare -A patterns
+declare -A actions
+i=1
 
-parse_input_mapping()
-{
-	
-	while read p; do
-		rules+=("$p")
-	done
-}
-
-
-parse_config()
-{
-	eval parse_defs
-	eval parse_input_mapping
-}
-
-parse_input()
-{
-	for arg in "{$rules[@]}";
-	do
-		for i in "$@"; do
-			echo ""
-		done
-	done
-}
-
-#parse_config < app_config
-
-testt()
-{
-	t="1"
-	if [ $t = "1" ]; then
-		echo "asdf"		
-		#declare -g $var
-		hhh="test<"
-	fi
-}
-
-match_string()
-{
-	string_pattern=${1%"@{"*}
-	string=${2#$string_pattern*}
-	pattern=${1#$string_pattern*}
-	if [ $string = $2 ]; then
-		echo "nieudane"
-		return 1
-	else
-		echo "udane"
-	fi
-}
-
-match_variable()
-{
-	v=${1#"@{"}
-	v=${v%"}@"*}
-	arr=(`echo $v | tr ":" " "`)
-	type=${arr[0]}
-	name=${arr[1]}
-}
+while read pattern;
+do
+    read action
+    action="\"$action\""
+    a1=`echo $action | sed 's/\$[[:digit:]]/\\"&\\"/g'`
+    echo "a1 $a1"
+    echo "$pattern -> $action"
+    patterns[$i]=$pattern
+    actions[$i]=$a1
+    i=$((i+1))
+done < cmd.txt
 
 pattern_matching()
 {
-	pattern=$1
-	string=$2
-	i=0
-	match_string $pattern $string
-	match_variable $pattern $string
+    k=1
+    for i in "${!patterns[@]}"
+    do
+        echo "i: $i match ${patterns[$i]}: ${actions[$i]}"
+        match "${patterns[$i]}" "${actions[$i]}"
+        echo "^^"
+    done
 }
 
-pattern_matching "asdf@{type:name}@fds" "asdffghj"
+pattern_matching

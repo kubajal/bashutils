@@ -1,0 +1,6 @@
+create index
+create $1
+delete index
+delete $1
+create abc virtual def
+create $2.$4
