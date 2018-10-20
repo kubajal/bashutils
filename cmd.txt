@@ -2,5 +2,7 @@ create index
 create $1
 delete index
 delete $1
-create abc virtual def
+create [[:alnum:]]+ virtual [[:alnum:]]+
 create $2.$4
+list all
+listall

@@ -1,1 +1,1 @@
-create abc virtual def
+list all
